@@ -1,0 +1,15 @@
+{
+    "devices": [{
+            "name": "Gtw1",
+            "email": "gtw.mob1@gmail.com"
+        },
+        {
+            "name": "Gtw2",
+            "email": "gtw.mob2@gmail.com"
+        },
+        {
+            "name": "Gtw3",
+            "email": "gtw.mob3@gmail.com"
+        }
+    ]
+}
