@@ -30,7 +30,7 @@ export default function MapView({ location, zoom, text }) {
   console.log("location=" + location);
 
   const [center, setCenter] = useState({});
-  const [zoomLevel, setZoomLevel] = useState(11);
+  const [zoomLevel, setZoomLevel] = useState(1);
   /*
   const defaultProps = {
     center: {
@@ -45,20 +45,36 @@ export default function MapView({ location, zoom, text }) {
   useEffect(() => {
 
     if (location !== undefined) {
+      console.log("location=" + (typeof location.lat));
+      console.log("zoom=" + zoom);
+
+      /*
       setCenter({
-        lat: location.lat,
-        lng: location.lon,
+        lat: 61.50,
+        lng: 23.76,
+      });*/
+      
+      
+      setCenter({
+        lat: parseFloat(location.lat),
+        lng: parseFloat(location.lon),
       });
-      setZoomLevel(zoom);
+      
+
+      console.log("location.lat="+location.lat);
+      
     }else{
       setCenter({
         lat: 62.897968,
         lng: 27.678171,
       });
     }
+    setZoomLevel(zoom);
+    console.log("zoom=" + zoom);
+    
 
   }, [location,zoom]);
-  console.log(center.lat);
+  
 
 /*
 lat: 63.897968,
@@ -90,7 +106,7 @@ lat: 63.897968,
       //setZoom(e.zoom);
       //console.log("CHANGED map loc="+location);
       //console.log("CHANGED map zoom="+zoom);
-      //console.log("ZOOMLEVEL=" + zoomLevel);
+      console.log("ZOOMLEVEL=" + zoomLevel);
       console.log("CENTER=" + JSON.stringify(e.center)+" ----   "+JSON.stringify(e.center));
       //if(e.center!==center){
         setZoomLevel(e.zoom);
@@ -103,7 +119,7 @@ lat: 63.897968,
     //    defaultCenter={center}
   return (
     // Important! Always set the container height explicitly
-    <div style={{ height: "100vh", width: "100%" }}>
+    <div style={{ height: "62vh", width: "100%" }}>
       <GoogleMapReact        
         bootstrapURLKeys={{ key: "AIzaSyDRBKyQQaMHt4LOiJQDdTnIQ0_FfUmLRFM" }}                
         center={center}

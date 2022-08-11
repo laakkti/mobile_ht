@@ -1,10 +1,13 @@
+Emulators app is set to read gtw.mob2@gmail.com address, beacause there is not many 
 For demo purpose there is couple of changing falues/suure englanniksi
 And for demo purpose there is some delay for demostration.
-MUUTA usedmemory freememoriksi
-LISÄÄ DATAAN yhteytyyppi ja signaalin voimakkuus!!!
+
+LISÄÄ DATAAN yhteystyyppi ja signaalin voimakkuus!!!
+
 Voidaan ajatella että luetaan sensoreita ja niiden suureita mm. lämpätila, tuulennopeus windspeed, valo lux, ilmanpaine, paine, kosteus etc. suureita.
 Demossa avaa useampi client joka send email
 Jos conitinues niin silloin pitäis huomioida palvella myös muitakin, joten... kerrko tästä ongelmasta että ohjelma ei ole suunniteltu tähän mutta on majhdollista
+
 This is just a demo how to mobile device behaves like service.
 Not handled every type of error situations. siis ei ole ennakoitu (mitä englanniksi)
 Contonues datan kun muuttaa niin sillä ohjataan viesti device-laitteen socketiin ja asetataanparametri joka lähettää data jatkuvasti tai pysäyttää viestivirran messageflow
@@ -33,11 +36,8 @@ lähetetään laitetiedot/sijainti tiedot kysyjälle socketio:n kautta ja kun si
 niin merkitään viesti luetuksi
 ja haetaan seuraava viesti (vanhin lukemattomista tietyin ehdoin)
 
----------------------------
-Seuraavaksi
-tehdään loop joka suorittaa tehtävää toistuvasti 
----------------------------
 
+Useeffect main loop there is dependency step and the change for step is needed for new render
 
 
 TESTAA riittääkö että laite on kirjautuneena vai pitääkö signinbuttonia ja onko testiversiosta -> tuotato metkitystä ettei siis tarivtse testikäyttäjiä merkitä.

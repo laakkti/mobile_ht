@@ -12,7 +12,7 @@ const SendMessage = ({ mode, setMode,message }) => {
   //const SendMessage=()=> {
   const [tokenClient, setTokenClient] = useState("");
     
-  // nämä json-tiedostoon ja requirella JSON.parsella käuttöömn
+  // nämä json-tiedostoon ja requirella JSON.parsella käyttöön
   // data = JSON.parse(JSON.stringify(data))
   const userID = "gtwmobmaster@gmail.com";
   const API_KEY = "AIzaSyCMI0gPPQ5cgOk4eWthA842gR4vxRBEDZY";
@@ -139,8 +139,7 @@ const SendMessage = ({ mode, setMode,message }) => {
     setMode("");
   }, [mode]);
 
-  // voisiko state-muutujaa lisättän yhdellä -> uusi renderöinti ja ehdot määrittää mitä tehdään kussakin stepissä
-
+  
   useEffect(() => {
     if (mode === "send") {
       async function act() {

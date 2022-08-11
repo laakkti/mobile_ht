@@ -63,10 +63,8 @@ const getMessages = async (subject, config) => {
   // GET https://gmail.googleapis.com/gmail/v1/users/gtwmob1%40gmail.com/messages?q=Subject%3AInfo%20is%3Aunread&key=[YOUR_API_KEY] HTTP/1.1
 
   const query = `?q=Subject:${subject} is:unread`;
-  //console.log(query);
 
   const response = await axios.get(baseUrl + 'messages' + query, config);
-  //console.log(JSON.stringify(response));
 
   let messages = [];
 
@@ -100,32 +98,26 @@ const markAsRead = async (msgId, config) => {
 const readMessage = async (msgId, config) => {
   // https://gmail.googleapis.com/gmail/v1/users/gtwmob1%40gmail.com/messages/1816ccd8188828de?key=[YOUR_API_KEY] HTTP/1.1
   let url = baseUrl + 'messages/' + msgId + '?key=' + API_KEY;
-  //console.log(url);
+
   try {
     const response = await axios.get(url, config);
 
     let data = response.data.payload.body.data;
-    //console.log(data);
 
     const _data = base64.decode(data);
     let obj = JSON.parse(_data);
 
-    return obj; //response.data;
+    return obj;
   } catch (e) {
     console.log('on readMessage ERROR: ' + e.message);
     return 'on readMessage ERROR: ' + e.message;
   }
 };
 
-//const SOCKET_SERVER_URL = 'http://localhost:3000';
-//const SOCKET_SERVER_URL = 'ws://192.168.43.249:3000';
-// tämä kuten id saadaan emaililla
-const SOCKET_SERVER_URL = 'ws://192.168.43.249:8080';
-//const SOCKET_SERVER_URL = 'ws://127.0.0.1:8080';
-//
+//const SOCKET_SERVER_URL = 'ws://192.168.43.249:8080';
 
 const App: () => Node = () => {
-  const [wss, setWss] = useState(0);
+  const [wss, setWss] = useState(null);
   const [location, setLocation] = useState(0);
   const [ipAddress, setIpAddress] = useState(0);
   const [batteryLevel, setBatteryLevel] = useState(0);
@@ -140,27 +132,19 @@ const App: () => Node = () => {
   const [levelColor, setLevelColor] = useState({});
 
   const [imgColor, setImgColor] = useState('#66b2b2');
+  const [socketServerAddress, setSocketServerAddress] = useState(null);
+
+  const [active, setActive] = useState(false);
+  //const [loadWebSocket, setLoadWebSocket] = useState(false);
 
   useEffect(() => {
     async function isSignedIn() {
       const val = await GoogleSignin.isSignedIn();
-
-      //********************************
-      /*
-      if (val === true) {
-        setStep(1);
-      }*/
       setIsSignedIn(val);
     }
     isSignedIn();
     GoogleSignin.configure(getScope());
   }, []);
-
-  /*const handleSendMessage = async () => {
-    let accessToken = await getAccessToken();
-    let config = getConfig(accessToken);
-    let response = await sendMessage(config);
-  };*/
 
   const getHandleMessages = async () => {
     let accessToken = await getAccessToken();
@@ -171,12 +155,8 @@ const App: () => Node = () => {
     console.log('messages=' + messages.length);
 
     if (messages.length > 0) {
-      // HUOM ehkä olis parempi vanhin ei luettu eli messages[messages.length-1]
       let message = await readMessage(messages[messages.length - 1], config);
-
       await markAsRead(messages[messages.length - 1], config);
-
-      //console.log(message);
       return message;
     } else {
       return '';
@@ -213,7 +193,6 @@ const App: () => Node = () => {
 
   const _getLocation = async () => {
     const loc = await getLocation();
-    //setLocation(JSON.stringify(loc));
     setLocation(loc);
   };
 
@@ -243,48 +222,69 @@ const App: () => Node = () => {
     setFreeMemory(1 - val / val2);
   };
 
+  /*
+ const setWebSocket=(SOCKET_SERVER_URL)=>{
+
+  ws = new WebSocket(SOCKET_SERVER_URL);
+  ws.onopen = () => {
+    console.log('WebSocket open');
+    setIsConnection(true);
+  };
+  ws.onclose = () => {
+    console.log('WebSocket close');
+    setIsConnection(false);
+  }
+  ws.onmessage = (e) => {
+    console.log('WebSocket message: ' + e.data);
+    setMessage(e.data);
+    setOk(true);
+  }
+  ws.onerror = (e) => {
+    console.log('WebSocket error: ' + e.message);
+    setIsConnection(false);
+  }
+  setWss(ws);
+ }*/
+
   useEffect(() => {
-    //update();
-    ws = new WebSocket(SOCKET_SERVER_URL);
+    //if (socketServer !== null) {
+    if (socketServerAddress !== null) {
+      console.log('####################################');
+      console.log('socketServerAddess=' + socketServerAddress);
 
-    ws.onopen = () => {
-      // connection opened
-      console.log('open');
-      //***************
-      setIsConnection(true);
-      //setStep(1);
+      ws = new WebSocket(socketServerAddress);
+      //ws = new WebSocket(SOCKET_SERVER_URL);
 
-      //ws.send('open'); // send a message
-    };
+      ws.onopen = () => {
+        console.log('open');
+        setIsConnection(true);
+      };
 
-    ws.onmessage = e => {
-      // a message was received
-      console.log('onmessage');
-      //console.log(e);
-      //const message = JSON.parse(e.data)
-      //console.log(message);
-      console.log(e.data);
-    };
+      ws.onmessage = e => {
+        console.log('onmessage');
+        console.log(e.data);
+      };
 
-    //ws.onmessage = handleMessage;
+      ws.onerror = e => {
+        console.log('WS ERROR: ' + e.message);
+      };
 
-    ws.onerror = e => {
-      // an error occurred
-      console.log('WS ERROR: ' + e.message);
-    };
+      ws.onclose = e => {
+        setIsConnection(false);
+      };
 
-    ws.onclose = e => {
-      // connection closed
-      setIsConnection(false);
-      console.log('onclose ' + e.code + ',' + e.reason);
-    };
-
-    setWss(ws);
+      console.log('#################################### setWss');
+      setWss(ws);
+    }
+    /*
     return () => {
-      console.log('DISCONNECT');
-      ws.close();
-    };
-  }, []);
+      //if (socketServer !== null) {
+      if (socketServerAddress!==null) {
+        console.log('DISCONNECT');
+        ws.close();
+      }
+    };*/
+  }, [socketServerAddress]);
 
   const setLevelColors = () => {
     let lc = {};
@@ -322,77 +322,110 @@ const App: () => Node = () => {
 
   useEffect(() => {
     update();
-    
   }, []);
 
-
-  useEffect(() => {    
+  useEffect(() => {
     setLevelColors();
   }, [batteryLevel, freeMemory]);
 
-  // voisiko nämä olla useEffectin sisällä?
-  //let message = '';
-
   async function step1() {
-    //await delay(2000);
-    // muuta funktion nimi
-    
     const message = await getHandleMessages();
-    if (message !== '') {      
+    if (message !== '') {
       setMessage(message);
-      setImgColor('#00FF00');
       console.log('message=' + JSON.stringify(message));
       console.log(
         '---------------------------------------------------------- ' +
           message.socketId,
       );
+      //setWebSocket(message.ip);
+
+      //setWebSocket(message.ip);
+      setSocketServerAddress('ws://' + message.ip);
+      //delay(500);
+      //setLoadWebSocket(true);
     }
     return message !== '';
-    // oikeastaan pitäis luoda uusi socketyhteys messages.ip-osoitteeseen
   }
 
   async function step2() {
-    update();
+    let ret;
+
+    if (socketServerAddress !== null) {
+      //if (wss !== null) {
+      setImgColor('#00FF00');
+      ret = true;
+    } else {
+      ret = false;
+    }
+
+    return ret; //(socketServer !== null);
   }
 
   async function step3() {
-    //console.log('on step3 message=' + JSON.stringify(message));
+    update();
+  }
+
+  async function step4() {
+    console.log('on step3 message=' + JSON.stringify(message));
     //console.log('on step3 sending by socketio ' + message.socketId);
-    handleSendSocketMessage(message.socketId);
-    delay(2000);
-    setImgColor('#66b2b2')
+
+    if (isConnection) {
+      handleSendSocketMessage(message.socketId);
+    }
+    setImgColor('#66b2b2');
+    return isConnection;
+    //delay(2000);
+    //setImgColor('#66b2b2');
+
     // await delay(1000);
     //await getHandleMessages();
   }
 
+  // jotta homma pyörii niin step pitää muuttua "joka kierroksella"
   useEffect(() => {
     async function prog() {
-      let ready = false;
-      //console.log('prog= ' + step);
-      if (step === 1) {
+      console.log('step=' + step);
+
+      if (step === 0) {
+        update();
+        setStep(1);
+      } else if (step === 1) {
         const ok = await step1();
         if (!ok) {
+
           setStep(0);
+        } else {
+
+          setStep(step + 1);
         }
       } else if (step === 2) {
-        await step2();
+        const ok = await step2();
+        if (!ok) {
+
+          setStep(6);
+        } else {
+          setStep(step + 1);
+        }
       } else if (step === 3) {
         await step3();
-        setOk(false);
-      } else if (step === 4) {
-        setStep(1);
-      }
-      if (step > 0 && step < 4) {
         setStep(step + 1);
       } else if (step === 4) {
+        const ok = await step4();
+        if (!ok) {
+          setStep(7);
+        } else {
+          setStep(step + 1);
+        }
+      } else if (step === 5) {
         setStep(1);
-      } else if (step === 0) {
-        setStep(1);
+      } else if (step === 6) {
+        setStep(2);
+      } else if (step === 7) {
+        setStep(4);
       }
-    }
-    if (isConnection) {
-      prog();
-    }
+
+    prog();
+
   }, [step, isConnection]);
 
   const handleSendSocketMessage = async socketId => {
@@ -408,13 +441,15 @@ const App: () => Node = () => {
     };
 
     console.log('message=' + JSON.stringify(message));
+    console.log('isConnection=' + isConnection);
+
     wss.send(JSON.stringify(message));
   };
 
   const handleUpdate = async () => {
     update();
-    setLevelColors();
-    setImgColor('#00FF00');
+    //setLevelColors();
+    //setImgColor('#00FF00');
   };
 
   const handleReadMessages = async () => {
@@ -440,27 +475,26 @@ const App: () => Node = () => {
             onPress={signIn}
           />
         ) : (
-          <View style={{marginTop:50}}>
+          <View style={{marginTop: 50}}>
             {/*<Button
               title="Send socket-message"
               onPress={handleSendSocketMessage}
-            />
-            <Button title="update" onPress={handleUpdate} />
-            <Button title="ReadMessages" onPress={handleReadMessages} />*/}
+        />*/}
+            {/*<Button title="update" onPress={handleUpdate} />*/}
+            {/*<Button title="ReadMessages" onPress={handleReadMessages} />*/}
+
             <Text style={styles.label}>Location</Text>
             <View style={styles.horizontal}>
-            <Text style={styles.value}>
-              {location.lat} 
-            </Text>
-            <Text style={styles.value}>
-            {location.lon}
-            </Text>
+              <Text style={styles.value}>{location.lat}</Text>
+              <Text style={styles.value}>{location.lon}</Text>
             </View>
             <Text style={styles.label}>Ip address</Text>
             <Text style={styles.value}>{ipAddress}</Text>
             <View style={styles.horizontal}>
               <Text style={styles.label}>Battery</Text>
-              <Text style={styles.value}>{Math.round(batteryLevel * 100)}%</Text>
+              <Text style={styles.value}>
+                {Math.round(batteryLevel * 100)}%
+              </Text>
             </View>
             <LinearProgress
               variant="determinate"
@@ -479,7 +513,7 @@ const App: () => Node = () => {
               style={{marginBottom: 10, height: 20}}
             />
 
-            <View>              
+            <View>
               <SVGImg
                 width="200"
                 height="200"
@@ -519,9 +553,9 @@ var styles = StyleSheet.create({
     color: '#000000',
     backgroundColor: '#b2d8d8',
     marginLeft: 5,
-    paddingLeft:5,
-    paddingRight:5,
-    marginBottom:5
+    paddingLeft: 5,
+    paddingRight: 5,
+    marginBottom: 5,
   },
 });
 
