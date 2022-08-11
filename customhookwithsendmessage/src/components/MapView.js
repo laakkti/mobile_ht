@@ -62,14 +62,15 @@ export default function MapView({ location, zoom, text }) {
       
 
       console.log("location.lat="+location.lat);
-      
+      setZoomLevel(zoom);  
     }else{
       setCenter({
-        lat: 62.897968,
-        lng: 27.678171,
+        lat: 65.6147,
+        lng: 26.0673,        
       });
+      setZoomLevel(5);
     }
-    setZoomLevel(zoom);
+    
     console.log("zoom=" + zoom);
     
 
@@ -110,7 +111,7 @@ lat: 63.897968,
       console.log("CENTER=" + JSON.stringify(e.center)+" ----   "+JSON.stringify(e.center));
       //if(e.center!==center){
         setZoomLevel(e.zoom);
-        //setCenter(e.center);
+        setCenter(e.center);
      // }
     //}
   }

@@ -423,6 +423,7 @@ const App: () => Node = () => {
       } else if (step === 7) {
         setStep(4);
       }
+    }
 
     prog();
 

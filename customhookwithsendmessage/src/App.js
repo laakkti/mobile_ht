@@ -1,7 +1,7 @@
 // baseAddr on asetettava development-käytössä ko. koneen ip-osoiteeseen localhost ei aina toimi
 // baseAddr välitetään emaililla RN-mobiillisovellukselle
 // baseAddr = "192.168.43.249:8080";
- 
+
 import React, { useState, useEffect } from "react";
 import SendMessage from "./components/SendMessage";
 import EmailForm from "./components/EmailForm";
@@ -36,13 +36,7 @@ const App = () => {
   let baseAddr = "/";
   if (process.env.NODE_ENV === "development") baseAddr = "192.168.43.249:8080";
 
-  //console.log("baseAddr: " + baseAddr);
-  const onClick = (p) => {
-    wss.send(Date.now());
-  };
-
   useEffect(() => {
-
     ws = new WebSocket("ws://" + baseAddr);
 
     ws.onopen = (event) => {
@@ -50,7 +44,6 @@ const App = () => {
     };
 
     ws.onmessage = function(event) {
-
       let msgObj = JSON.parse(event.data);
 
       //console.log(event.data);
@@ -61,19 +54,26 @@ const App = () => {
         } else if (msgObj.sender === "mob") {
           setData(msgObj);
         }
-
       }
-
     };
     setWss(ws); // buttonClick tarvitsee tilamuuttujan tilan, MUTTA tässä ei sitä tarvita
-    
+
     return () => ws.close();
   }, []);
 
+  /*
+     const setLocation = (position) =>{
+      console.log('Longitude ' + position.coords.longitude);
+      console.log('Latitude ' + position.coords.latitude);
+      handleSetLoc(position.coords.latitude, position.coords.longitude);
+    }
+
+    if(navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(setLocation);
+    }
+   */
+
   const handleSendMessage = (email) => {
-
-//    console.log("location=" + window.location);
-
     const data = {
       email: email,
       ip: baseAddr,
@@ -81,13 +81,12 @@ const App = () => {
     };
 
     setMessage(data);
+
     setMode("send");
-  
   };
 
-
-//for demo purposes without incoming data
-/*
+  //for demo purposes without incoming data
+  /*
   useEffect(() => {
     let _data = {
       location: {
@@ -103,7 +102,6 @@ const App = () => {
   }, []);
 */
 
-
   useEffect(() => {
     let val = Math.round((data.usedMemory / data.totalMemory) * 100);
 
@@ -113,12 +111,12 @@ const App = () => {
       lc.memory = "danger";
     } else if (val <= 49 && val > 29) {
       lc.memory = "warning";
-    } else {      
+    } else {
       lc.memory = "success";
     }
-    
+
     val = data.batteryLevel * 100;
-    
+
     if (val > 49) {
       lc.battery = "success";
     } else if (val <= 49 && val > 29) {
@@ -129,9 +127,7 @@ const App = () => {
     setLevelColor(lc);
   }, [data]);
 
-
   function getDateTime(epocTime) {
-
     let date = new Date(epocTime);
     let hour = date.getHours();
     let minute = date.getMinutes();
@@ -187,13 +183,17 @@ const App = () => {
               <Card.Body>
                 <Card.Title>Device info</Card.Title>
                 <Card.Text></Card.Text>
-                <Form.Label className="mb-0" style={{color:'#1A3E4C'}}>Timestamp</Form.Label>
+                <Form.Label className="mb-0" style={{ color: "#1A3E4C" }}>
+                  Timestamp
+                </Form.Label>
                 <div>
-                  <Form.Label>
-                    {getDateTime(data.time)}
-                  </Form.Label>
-                </div>                
-                <Form.Label size="sm" className="mb-0" style={{color:'#1A3E4C'}}>
+                  <Form.Label>{getDateTime(data.time)}</Form.Label>
+                </div>
+                <Form.Label
+                  size="sm"
+                  className="mb-0"
+                  style={{ color: "#1A3E4C" }}
+                >
                   Location
                 </Form.Label>
                 <Row className="mb-1">
@@ -218,7 +218,11 @@ const App = () => {
                   </Col>
                 </Row>
                 <BatteryHalf className="me-1" color="teal" size={20} />
-                <Form.Label size="sm" className="mb-0" style={{color:'#1A3E4C'}}>
+                <Form.Label
+                  size="sm"
+                  className="mb-0"
+                  style={{ color: "#1A3E4C" }}
+                >
                   Battery level
                 </Form.Label>
                 <ProgressBar
@@ -229,7 +233,11 @@ const App = () => {
                   label={`${Math.round(data.batteryLevel * 100)}%`}
                 />
                 <Memory className="me-1" color="teal" size={20} />
-                <Form.Label size="sm" className="mt-1 mb-0" style={{color:'#1A3E4C'}}>
+                <Form.Label
+                  size="sm"
+                  className="mt-1 mb-0"
+                  style={{ color: "#1A3E4C" }}
+                >
                   Free memory
                 </Form.Label>
                 <ProgressBar
