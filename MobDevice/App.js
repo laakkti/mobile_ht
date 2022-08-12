@@ -135,7 +135,6 @@ const App: () => Node = () => {
   const [socketServerAddress, setSocketServerAddress] = useState(null);
 
   const [active, setActive] = useState(false);
-  //const [loadWebSocket, setLoadWebSocket] = useState(false);
 
   useEffect(() => {
     async function isSignedIn() {
@@ -222,34 +221,11 @@ const App: () => Node = () => {
     setFreeMemory(1 - val / val2);
   };
 
-  /*
- const setWebSocket=(SOCKET_SERVER_URL)=>{
-
-  ws = new WebSocket(SOCKET_SERVER_URL);
-  ws.onopen = () => {
-    console.log('WebSocket open');
-    setIsConnection(true);
-  };
-  ws.onclose = () => {
-    console.log('WebSocket close');
-    setIsConnection(false);
-  }
-  ws.onmessage = (e) => {
-    console.log('WebSocket message: ' + e.data);
-    setMessage(e.data);
-    setOk(true);
-  }
-  ws.onerror = (e) => {
-    console.log('WebSocket error: ' + e.message);
-    setIsConnection(false);
-  }
-  setWss(ws);
- }*/
 
   useEffect(() => {
     //if (socketServer !== null) {
     if (socketServerAddress !== null) {
-      console.log('####################################');
+
       console.log('socketServerAddess=' + socketServerAddress);
 
       ws = new WebSocket(socketServerAddress);
@@ -273,7 +249,6 @@ const App: () => Node = () => {
         setIsConnection(false);
       };
 
-      console.log('#################################### setWss');
       setWss(ws);
     }
     /*
@@ -337,12 +312,9 @@ const App: () => Node = () => {
         '---------------------------------------------------------- ' +
           message.socketId,
       );
-      //setWebSocket(message.ip);
 
-      //setWebSocket(message.ip);
       setSocketServerAddress('ws://' + message.ip);
-      //delay(500);
-      //setLoadWebSocket(true);
+
     }
     return message !== '';
   }
@@ -351,7 +323,7 @@ const App: () => Node = () => {
     let ret;
 
     if (socketServerAddress !== null) {
-      //if (wss !== null) {
+
       setImgColor('#00FF00');
       ret = true;
     } else {
@@ -367,18 +339,13 @@ const App: () => Node = () => {
 
   async function step4() {
     console.log('on step3 message=' + JSON.stringify(message));
-    //console.log('on step3 sending by socketio ' + message.socketId);
-
+  
     if (isConnection) {
       handleSendSocketMessage(message.socketId);
     }
     setImgColor('#66b2b2');
     return isConnection;
-    //delay(2000);
-    //setImgColor('#66b2b2');
 
-    // await delay(1000);
-    //await getHandleMessages();
   }
 
   // jotta homma pyörii niin step pitää muuttua "joka kierroksella"
@@ -449,15 +416,11 @@ const App: () => Node = () => {
 
   const handleUpdate = async () => {
     update();
-    //setLevelColors();
-    //setImgColor('#00FF00');
+
   };
 
   const handleReadMessages = async () => {
-    console.log(freeMemory);
 
-    //setStep(1);
-    //setIsConnection(true);
   };
 
   // source={require('./broadcast.svg')}

@@ -29,8 +29,7 @@ const App = () => {
   const [levelColor, setLevelColor] = useState({});
   const [zoomLevel, setZoomLevel] = useState(11);
 
-  //  let message="";
-  //let socketId = "";
+  
   let ws;
 
   let baseAddr = "/";
@@ -40,7 +39,7 @@ const App = () => {
     ws = new WebSocket("ws://" + baseAddr);
 
     ws.onopen = (event) => {
-      //console.log("WS onopen");
+  
     };
 
     ws.onmessage = function(event) {
